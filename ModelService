@@ -1,0 +1,11 @@
+package coding.io.rentACar.business.abstracts;
+
+import java.util.List;
+
+import coding.io.rentACar.business.responses.GetAllModelsResponse;
+
+public interface ModelService {
+	List<GetAllModelsResponse> getAll();
+
+
+}
