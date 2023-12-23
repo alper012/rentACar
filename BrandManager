@@ -10,6 +10,7 @@ import coding.io.rentACar.business.requests.CreateBrandRequest;
 import coding.io.rentACar.business.requests.UpdateBrandRequest;
 import coding.io.rentACar.business.responses.GetAllBrandsResponse;
 import coding.io.rentACar.business.responses.GetByIdBrandResponse;
+import coding.io.rentACar.business.rules.BrandBusinessRules;
 import coding.io.rentACar.core.utilities.mappers.ModelMapperService;
 import coding.io.rentACar.dataAccess.abstracts.BrandRepository;
 import coding.io.rentACar.entities.concretes.Brand;
@@ -19,6 +20,7 @@ import lombok.AllArgsConstructor;
 public class BrandManager implements BrandService {
 	private BrandRepository brandRepository;
 	private ModelMapperService modelMapperService;
+	private BrandBusinessRules brandBusinessRules;
 
 	@Override
 	public List<GetAllBrandsResponse> getAll() {
@@ -32,13 +34,17 @@ public class BrandManager implements BrandService {
 		}
 	@Override
 	public GetByIdBrandResponse getById(int id) {
-		Brand brand = this.brandRepository.findById(id).orElseThrow();
+		Brand brand = this.brandRepository.findById(id).orElseThrow(); // <= fetching the brand
+		// mapping to a response object  
 		GetByIdBrandResponse response = this.modelMapperService.forResponse().map(brand, GetByIdBrandResponse.class);
 		return response;
 	}
 	@Override
 	public void add(CreateBrandRequest createBrandRequest) {
-		Brand brand = this.modelMapperService.forRequest().map(createBrandRequest, Brand.class);
+		
+		this.brandBusinessRules.existsByNameEqualsIgnoreCase(createBrandRequest.getName()); // checking if the name exists  
+		
+		Brand brand = this.modelMapperService.forRequest().map(createBrandRequest, Brand.class); // mapping to a brand object
 		this.brandRepository.save(brand);		
 	}
 
